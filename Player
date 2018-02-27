@@ -1,0 +1,42 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Player : MonoBehaviour {
+	
+	CharacterController cc;
+	float moveX, moveZ, rotY, downwardForce;
+	float speed = 0.1f;
+	Vector3 moveSpeed;
+    public int coinCount = 0;
+
+	void Start () {
+		cc = GetComponent<CharacterController> ();
+	}
+
+	void Update () {
+        moveX = Input.GetAxis("Horizontal");
+        moveZ = Input.GetAxis("Vertical");
+        rotY = Input.GetAxis("Mouse X");
+        if (downwardForce > Physics.gravity.y) {
+			downwardForce -= 0.1f;
+		}
+        if (cc.isGrounded && Input.GetButtonDown("Jump")) {
+            downwardForce = 3;
+        }
+        transform.Rotate(0, rotY, 0);
+		moveSpeed = new Vector3 (moveX, downwardForce, moveZ);
+		moveSpeed = transform.rotation * moveSpeed;
+		cc.Move (moveSpeed * speed);
+	}
+
+	void OnTriggerEnter(Collider other)
+    {
+		if (other.gameObject.tag == "Coin")
+        {
+			coinCount++;
+			print (coinCount);
+			other.gameObject.SetActive (false);
+        }
+    }
+}
